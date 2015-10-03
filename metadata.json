@@ -1,12 +1,12 @@
 {
-  "name": "jethrocarr-users",
+  "name": "jethrocarr-virtual_user",
   "version": "0.0.1",
   "author": "jethrocarr",
   "summary": "Very simple lightweight virtual user management module",
   "license": "Apache-2.0",
-  "source": "https://github.com/jethrocarr/puppet-users",
-  "project_page": "https://github.com/jethrocarr/puppet-users",
-  "issues_url": "https://github.com/jethrocarr/puppet-users/issues",
+  "source": "https://github.com/jethrocarr/puppet-virtual_user",
+  "project_page": "https://github.com/jethrocarr/puppet-virtual_user",
+  "issues_url": "https://github.com/jethrocarr/puppet-virtual_user/issues",
   "dependencies": [
     {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"}
   ]
