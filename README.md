@@ -6,6 +6,8 @@ for reference if you wish to use it.
 
 # Usage
 
+## Basic Usage
+
 The way to use this module is always to invoke the `virtual_user` resource as
 a virtual and then "realize" it on the systems you want the user accounts on.
 
@@ -32,10 +34,43 @@ If you want to do more complex things or tinker, check out the
 by default, such as creating the home directory and purging any other SSH
 authorized keys that aren't explicity configured.
 
-This module is Hiera-friendly, the way you should use it is define the users in
-Hiera and then add the following code to generate the virtual resources from
-hiera.
 
+## Hiera Example
+
+If you're using Hiera (recommended) then you can easily define all the user
+accounts in Hiera and use a couple lines in a Puppet manifest to generate all
+the virtual users from that.
+
+The following is an example of inheriting data from Hiera with the Puppet
+manifest:
+
+    # Generate all users from Hiera data
+    create_resources("@virtual_user", hiera(virtual_users))
+
+    # Realize the SOE users here.
+    Virtual_user <| tags == soe |>
+
+
+The following is the associated example Hiera configuration:
+
+    virtual_users:
+      jane:
+        uid: 1000
+        groups:
+         - wheel
+        password_hash: >
+          gEWyw234egW@$YWU@$WHR#%YHR#$^Q%WY$RH^Q#$WEGQ#%Y$RWHQ#^TYGW#%Ysy423teg4y4s
+          tg23tygway4h234wag34yhwahgw34yh4d
+        ssh_key_pub: >
+          ZZZZZRH34e2hw4eghq234yh2wh23hq123hy23gh4w3h4h2wheh4w4h4h2w4wahg43qewg23hy
+          gk.234hgilo2bw,gbjk2b34jktgblwl3jt;gjwj4;tjgklw34jfg4h34h43yhhh444h4hh4hf
+        ssh_key_type: ssh-rsa
+        tags:
+         - soe
+
+Note the use of the `>` charactor with `password_hash` and `ssh_key_pub`, this
+allows you to split the long hash and SSH key strings across multiple lines if
+desired to keep things tidier/more readable.
 
 
 # Additional Tips
