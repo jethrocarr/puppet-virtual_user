@@ -14,6 +14,7 @@ define virtual_user (
   $ssh_key_type   = undef,
   $ssh_key_pub    = undef,
   $ssh_key_purge  = true,
+  $tags           = [],
 ) {
 
   if (!$uid) {
