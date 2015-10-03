@@ -1,4 +1,4 @@
-# puppet-users
+# puppet-virtual_user
 
 A very simple lightweight user module. You've seen this module before, pretty
 much every Puppet-using site ends up with some form of this, mine is shared
