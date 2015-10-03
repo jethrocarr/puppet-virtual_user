@@ -1,5 +1,10 @@
 # Define user accounts to group multiple resources together, making it very
 # easy to use as virtual resources that are then realised.
+#
+# TIP:
+# Refer to the Puppet resource documentation at
+# https://docs.puppetlabs.com/references/latest/type.html to learn more about
+# the different resources and parameters used below.
 
 define virtual_user (
   $username       = $name,
