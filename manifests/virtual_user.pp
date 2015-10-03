@@ -1,7 +1,7 @@
 # Define user accounts to group multiple resources together, making it very
 # easy to use as virtual resources that are then realised.
 
-define users (
+define virtual_user (
   $username       = $name,
   $ensure         = 'present',
   $uid            = undef,
