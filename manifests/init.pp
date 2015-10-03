@@ -34,7 +34,7 @@ define virtual_user (
     groups         => $groups,
     home           => $home,
     shell          => $shell,
-    password       => $password_hash,
+    password       => delete($password_hash, ' '), # remove any accidental whitespace from line wrapping
     managehome     => $managehome,
     purge_ssh_keys => $ssh_key_purge,
   }
@@ -58,7 +58,7 @@ define virtual_user (
     ssh_authorized_key { $username:
       user => $username,
       type => $ssh_key_type,
-      key  => $ssh_key_pub,
+      key  => delete($ssh_key_pub, ' '), # remove any accidental whitespace from line wrapping
     }
   }
 
