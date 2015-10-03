@@ -13,9 +13,9 @@ a virtual and then "realize" it on the systems you want the user accounts on.
 
 At it's simpliest, you can define a user account as per the following example:
 
-   # Define virtual user Jane. This means Jane won't be applied, unless we
-   # realise her later on.
-   @virtual_user { 'jane':
+    # Define virtual user Jane. This means Jane won't be applied, unless we
+    # realise her later on.
+    @virtual_user { 'jane':
       uid           => '1000',
       groups        => ['wheel'],
       password_hash => 'hash',
