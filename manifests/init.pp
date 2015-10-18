@@ -28,7 +28,7 @@ define virtual_user (
 
   # Create the user account (and associated group).
   user { $username:
-    ensure         => present,
+    ensure         => $ensure,
     uid            => $uid,
     gid            => $gid,
     groups         => $groups,
@@ -40,7 +40,8 @@ define virtual_user (
   }
 
   group { $username:
-    gid => $gid,
+    ensure => $ensure,
+    gid    => $gid,
   }
 
 
@@ -56,9 +57,10 @@ define virtual_user (
 
   if ($ssh_key_type and $ssh_key_pub) {
     ssh_authorized_key { $username:
-      user => $username,
-      type => $ssh_key_type,
-      key  => delete(chomp($ssh_key_pub), ' '), # remove any accidental whitespace from line wrapping
+      ensure => $ensure,
+      user   => $username,
+      type   => $ssh_key_type,
+      key    => delete(chomp($ssh_key_pub), ' '), # remove any accidental whitespace from line wrapping
     }
   }
 
