@@ -26,6 +26,11 @@ define virtual_user (
     fail("A uid must be provided for user ${username}")
   }
 
+  # Clean up removal of users/groups properly.
+  if $ensure == 'absent' {
+    User[$username] -> Group[$username]
+  }
+
   # Create the user account (and associated group).
   user { $username:
     ensure         => $ensure,
