@@ -1,6 +1,6 @@
 {
   "name": "jethrocarr-virtual_user",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "jethrocarr",
   "summary": "Very simple lightweight virtual user management module",
   "license": "Apache-2.0",
