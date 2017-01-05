@@ -11,7 +11,7 @@ for reference if you wish to use it.
 The way to use this module is always to invoke the `virtual_user` resource as
 a virtual and then "realize" it on the systems you want the user accounts on.
 
-At it's simpliest, you can define a user account as per the following example:
+At it's simplest, you can define a user account as per the following example:
 
     # Define virtual user Jane. This means Jane won't be applied, unless we
     # realise her later on.
@@ -28,17 +28,37 @@ At it's simpliest, you can define a user account as per the following example:
     # our Jane example from above and ensure she has an account on this server.
     Virtual_user <| tags == soe |>
 
+If you set `puppet_controlled_pw => false` the module will create an initial 
+password specified as a hash in `password_hash` and configure the account to 
+require a new password to be set on first login. If the password is not changed
+within 7 days (default), the account is disabled. This allows users to control 
+their own passwords separately from puppet. If you do not set `password_hash`,
+a default of `this.is.insecure` will be used. Example:
+
+    # Define virtual user Jane. This means Jane won't be applied, unless we
+    # realise her later on. She will have to change her password on first login.
+    # As no password_hash is defined, the default will be used. If she does not 
+    # change her password within 3 days, her account will be deactivated.
+    @virtual_user { 'jane':
+      uid                  => '1000',
+      groups               => ['wheel'],
+      puppet_controlled_pw => false,
+      inactive             => '3',
+    }
+    
+    # Here we "realize" the specific user Jane
+    realize(Virtual_user['jane'])
 
 If you want to do more complex things or tinker, check out the
-`manifests/init.pp` file for the full list of params, we make some assumptions
+`manifests/init.pp` file for the full list of params; we make some assumptions
 by default, such as creating the home directory and purging any other SSH
-authorized keys that aren't explicity configured.
+authorized keys that aren't explicitly configured.
 
 
 ## Hiera Example
 
 If you're using Hiera (recommended) then you can easily define all the user
-accounts in Hiera and use a couple lines in a Puppet manifest to generate all
+accounts in Hiera and use a couple of lines in a Puppet manifest to generate all
 the virtual users from that.
 
 The following is an example of inheriting data from Hiera with the Puppet
