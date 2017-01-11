@@ -7,21 +7,45 @@
 # the different resources and parameters used below.
 
 define virtual_user (
-  $username       = $name,
-  $ensure         = 'present',
-  $uid            = undef,
-  $gid            = $uid,
-  $home           = "/home/${name}",
-  $shell          = "/bin/bash",
-  $password_hash  = undef,
-  $managehome     = true,
-  $groups         = [],
-  $ssh_key_type   = undef,
-  $ssh_key_pub    = undef,
-  $ssh_key_purge  = true,
-  $tags           = [],
+  $username             = $name,
+  $ensure               = 'present',
+  $uid                  = undef,
+  $gid                  = $uid,
+  $home                 = "/home/${name}",
+  $shell                = "/bin/bash",
+  $password_hash        = undef,
+  $managehome           = true,
+  $groups               = [],
+  $ssh_key_type         = undef,
+  $ssh_key_pub          = undef,
+  $ssh_key_purge        = true,
+  $tags                 = [],
+  $password_max_age     = '17144',
+  $password_min_age     = '0',
+  $inactive             = '7',
+  $puppet_controlled_pw = true,
+  $comment              = undef,
 ) {
 
+  if $puppet_controlled_pw {
+    if $password_hash == undef {
+      fail("A password hash for user ${username} needs to be provided for a puppet controlled password")
+    } else {
+      $firstpw = delete(chomp($password_hash), ' ') # remove any accidental whitespace from line wrapping
+      $offset  = Timestamp.new.strftime("%s") / 86400
+      $password = $firstpw
+    }
+  } else { 
+      if $password_hash == undef {
+        # Initial password is set to "this.is.insecure"
+        $firstpw = '$6$wt56xSu5$UvdMe7flLJHRuiMooXy8eE5aOVNVMZjfAPeBAafzfVYor4tWecp5UafnQ8Fm3Jbu6OpiQm.IpX.j7qFO5g9iO1'
+      } else {
+        $firstpw = $password_hash
+      }
+      # Forces new password at first login
+      $offset  = Timestamp.new.strftime("%s") / 86400 - 17145    
+  }
+    
   if (!$uid) {
     fail("A uid must be provided for user ${username}")
   }
@@ -33,15 +57,18 @@ define virtual_user (
 
   # Create the user account (and associated group).
   user { $username:
-    ensure         => $ensure,
-    uid            => $uid,
-    gid            => $gid,
-    groups         => $groups,
-    home           => $home,
-    shell          => $shell,
-    password       => delete(chomp($password_hash), ' '), # remove any accidental whitespace from line wrapping
-    managehome     => $managehome,
-    purge_ssh_keys => $ssh_key_purge,
+    ensure           => $ensure,
+    uid              => $uid,
+    gid              => $gid,
+    groups           => $groups,
+    home             => $home,
+    shell            => $shell,
+    managehome       => $managehome,
+    purge_ssh_keys   => $ssh_key_purge,
+    password_max_age => $password_max_age,
+    password_min_age => $password_max_age,
+    password         => $password,
+    comment          => $comment,
   }
 
   group { $username:
@@ -68,9 +95,11 @@ define virtual_user (
       key    => delete(chomp($ssh_key_pub), ' '), # remove any accidental whitespace from line wrapping
     }
   }
-
-
-
+  exec { "setfirstpw_${username}":
+    command => "/usr/sbin/usermod -p '${firstpw}' $username -f $inactive ;/usr/bin/chage -d '${offset}' '${username}'",
+    onlyif => "/bin/egrep -q '^${username}:[*!]' /etc/shadow",
+    require => User[$username];
+  }
 }
 
 # vi:smartindent:tabstop=2:shiftwidth=2:expandtab:
